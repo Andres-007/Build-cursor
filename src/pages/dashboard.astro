@@ -44,7 +44,7 @@ import { planDiaMock } from '../data/mock';
   <div class="modal" id="subject-modal" aria-hidden="true">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Nueva materia</h3>
+        <h3 id="subject-modal-title">Nueva materia</h3>
         <button type="button" class="modal-close" data-close="subject-modal">✕</button>
       </div>
       <form id="subject-form" class="modal-form">
@@ -307,6 +307,7 @@ import { planDiaMock } from '../data/mock';
   const newSubjectCalendarBtn = document.getElementById('btn-new-subject-calendar');
   const subjectModal = document.getElementById('subject-modal');
   const subjectForm = document.getElementById('subject-form');
+  const subjectModalTitle = document.getElementById('subject-modal-title');
   const subjectStatus = document.getElementById('subject-status');
   const subjectDelete = document.getElementById('subject-delete');
 
@@ -336,7 +337,18 @@ import { planDiaMock } from '../data/mock';
     });
   });
 
-  newSubjectCalendarBtn?.addEventListener('click', () => openModal(subjectModal));
+  function openNewItemModal() {
+    if (!subjectForm) return;
+    subjectForm.reset();
+    (subjectForm.querySelector('[name="id"]')).value = '';
+    (subjectForm.querySelector('[name="type"]')).value = 'subject';
+    setFormMode('subject');
+    if (subjectDelete) subjectDelete.style.display = 'none';
+    if (subjectModalTitle) subjectModalTitle.textContent = 'Nueva materia';
+    openModal(subjectModal);
+  }
+
+  newSubjectCalendarBtn?.addEventListener('click', openNewItemModal);
 
   function formatDateKey(date) {
     return date.toISOString().slice(0, 10);
@@ -528,6 +540,9 @@ import { planDiaMock } from '../data/mock';
       eventBlock.style.display = type === 'event' ? 'grid' : 'none';
     }
     if (submitBtn) submitBtn.textContent = type === 'event' ? 'Guardar evento' : 'Guardar materia';
+    if (subjectModalTitle) {
+      subjectModalTitle.textContent = type === 'event' ? 'Nuevo evento' : 'Nueva materia';
+    }
   }
 
   document.getElementById('item-type')?.addEventListener('change', (e) => {
@@ -632,6 +647,7 @@ import { planDiaMock } from '../data/mock';
     (subjectForm.querySelector('[name="date"]')).value = '';
     (subjectForm.querySelector('[name="note"]')).value = '';
     setFormMode('subject');
+    if (subjectDelete) subjectDelete.style.display = 'inline-flex';
     openModal(subjectModal);
   }
 
@@ -646,6 +662,7 @@ import { planDiaMock } from '../data/mock';
     (subjectForm.querySelector('[name="examDate"]')).value = '';
     (subjectForm.querySelector('[name="color"]')).value = '';
     setFormMode('event');
+    if (subjectDelete) subjectDelete.style.display = 'inline-flex';
     openModal(subjectModal);
   }
 
