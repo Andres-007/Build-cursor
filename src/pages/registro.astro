@@ -23,6 +23,7 @@ import Layout from '../layouts/Layout.astro';
   <p class="form-note">
     Prototipo sin base de datos: se guarda la sesión de forma local para la demo.
   </p>
+  <p class="form-link"><a href="/" class="link-dashboard">← Volver al inicio</a></p>
 </Layout>
 
 <style>
@@ -41,6 +42,17 @@ import Layout from '../layouts/Layout.astro';
     margin-top: 1.5rem;
     color: var(--text-muted);
     font-size: 0.9rem;
+  }
+  .form-link {
+    margin-top: 1rem;
+  }
+  .link-dashboard {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .link-dashboard:hover {
+    text-decoration: underline;
   }
 </style>
 
