@@ -4,13 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node node_modules/astro/astro.js dev",
-    "build": "node node_modules/astro/astro.js build",
-    "preview": "node node_modules/astro/astro.js preview",
-    "astro": "node node_modules/astro/astro.js dev"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "dependencies": {
     "astro": "^5.17.1",
-    "postgres": "^3.4.5"
+    "mongodb": "^7.0.0"
   }
 }

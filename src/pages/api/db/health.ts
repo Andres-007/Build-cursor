@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro';
-import { sql } from '../../../lib/db';
+import { getDb } from '../../../lib/db';
 
 export const GET: APIRoute = async () => {
   try {
-    await sql`SELECT 1`;
+    const db = await getDb();
+    await db.command({ ping: 1 });
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
