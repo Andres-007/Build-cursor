@@ -135,7 +135,12 @@ import Layout from '../layouts/Layout.astro';
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
   .hero-card.feature-card {
-    padding: 1.25rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(74, 144, 217, 0.12);
+    background: linear-gradient(160deg, rgba(74, 144, 217, 0.08), rgba(255, 255, 255, 0.02));
+  }
+  .hero-card.feature-card h2 {
+    margin-top: 0;
   }
   .hero-card .feature-list {
     margin: 0.75rem 0 0;
@@ -143,7 +148,9 @@ import Layout from '../layouts/Layout.astro';
     color: var(--text-muted);
   }
   .feature-card {
-    padding: 1.25rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(74, 144, 217, 0.08);
+    background: rgba(255, 255, 255, 0.04);
   }
   .feature-card p {
     color: var(--text-muted);
@@ -152,6 +159,12 @@ import Layout from '../layouts/Layout.astro';
     margin: 0.75rem 0 0;
     padding-left: 1.2rem;
     color: var(--text-muted);
+  }
+  .feature-card h3 {
+    margin-top: 0;
+  }
+  .feature-card:hover {
+    transform: translateY(-6px);
   }
 
   /* Ventanas flotantes (modales) */
