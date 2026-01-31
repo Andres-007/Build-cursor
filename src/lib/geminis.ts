@@ -3,8 +3,8 @@ type GeminiContent = { parts?: GeminiTextPart[] };
 type GeminiCandidate = { content?: GeminiContent };
 type GeminiResponse = { candidates?: GeminiCandidate[]; promptFeedback?: unknown };
 
-const apiKey = process.env.GEMINI_API_KEY;
-const model = process.env.GEMINI_MODEL ?? 'gemini-1.5-flash';
+const apiKey = import.meta.env.GEMINI_API_KEY;
+const model = 'gemini-2.5-flash';
 
 if (!apiKey || !apiKey.trim()) {
   throw new Error('GEMINI_API_KEY no está definida en el archivo .env');
