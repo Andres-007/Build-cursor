@@ -7,15 +7,6 @@ import { planDiaMock } from '../data/mock';
 <Layout title="Dashboard - Asistente de Estudio">
   <h1>Dashboard</h1>
 
-  <section class="materias-section">
-    <div class="section-header">
-      <h2 class="section-title">Materias registradas</h2>
-      <button type="button" class="btn btn-outline" id="btn-new-subject">Nueva materia</button>
-    </div>
-    <div class="materias-grid" id="subjects-grid"></div>
-    <p class="empty-state" id="subjects-empty">Aún no has registrado materias.</p>
-  </section>
-
   <section class="calendar-section">
     <div class="section-header">
       <h2 class="section-title">Calendario</h2>
@@ -32,6 +23,14 @@ import { planDiaMock } from '../data/mock';
     </div>
     <div class="calendar-grid" id="calendar-grid"></div>
     <div class="calendar-week" id="calendar-week"></div>
+  </section>
+
+  <section class="materias-section">
+    <div class="section-header">
+      <h2 class="section-title">Materias registradas</h2>
+    </div>
+    <div class="materias-grid" id="subjects-grid"></div>
+    <p class="empty-state" id="subjects-empty">Aún no has registrado materias.</p>
   </section>
 
   <section class="plan-section">
@@ -305,7 +304,6 @@ import { planDiaMock } from '../data/mock';
   const nextMonthBtn = document.getElementById('next-month');
   const viewMonthBtn = document.getElementById('view-month');
   const viewWeekBtn = document.getElementById('view-week');
-  const newSubjectBtn = document.getElementById('btn-new-subject');
   const newSubjectCalendarBtn = document.getElementById('btn-new-subject-calendar');
   const subjectModal = document.getElementById('subject-modal');
   const subjectForm = document.getElementById('subject-form');
@@ -338,7 +336,6 @@ import { planDiaMock } from '../data/mock';
     });
   });
 
-  newSubjectBtn?.addEventListener('click', () => openModal(subjectModal));
   newSubjectCalendarBtn?.addEventListener('click', () => openModal(subjectModal));
 
   function formatDateKey(date) {
@@ -375,12 +372,14 @@ import { planDiaMock } from '../data/mock';
     const daySubjects = subjects.filter((s) => s.exam_date === dateKey).map((s) => ({
       id: s.id,
       label: s.name,
-      type: 'subject'
+      type: 'subject',
+      color: s.color || ''
     }));
     const dayEvents = events.filter((e) => e.date === dateKey).map((e) => ({
       id: e.id,
       label: e.title,
-      type: 'event'
+      type: 'event',
+      color: ''
     }));
     return [...daySubjects, ...dayEvents];
   }
@@ -425,10 +424,10 @@ import { planDiaMock } from '../data/mock';
       cell.className = 'calendar-day';
       const itemsHtml = items
         .slice(0, 3)
-        .map(
-          (item) =>
-            `<div class="calendar-item ${item.type === 'event' ? 'event' : ''}" data-id="${item.id}" data-type="${item.type}">${item.label}</div>`
-        )
+        .map((item) => {
+          const colorStyle = item.color ? `style="background: ${item.color}; color: #fff;"` : '';
+          return `<div class="calendar-item ${item.type === 'event' ? 'event' : ''}" data-id="${item.id}" data-type="${item.type}" ${colorStyle}>${item.label}</div>`;
+        })
         .join('');
       const more = items.length > 3 ? `<div class="calendar-item">+${items.length - 3} más</div>` : '';
       cell.innerHTML = `<header>${day}</header><div class="calendar-items">${itemsHtml}${more}</div>`;
@@ -455,10 +454,10 @@ import { planDiaMock } from '../data/mock';
       const dayBox = document.createElement('div');
       dayBox.className = 'week-day';
       const itemsHtml = items
-        .map(
-          (item) =>
-            `<div class="calendar-item ${item.type === 'event' ? 'event' : ''}" data-id="${item.id}" data-type="${item.type}">${item.label}</div>`
-        )
+        .map((item) => {
+          const colorStyle = item.color ? `style="background: ${item.color}; color: #fff;"` : '';
+          return `<div class="calendar-item ${item.type === 'event' ? 'event' : ''}" data-id="${item.id}" data-type="${item.type}" ${colorStyle}>${item.label}</div>`;
+        })
         .join('');
       dayBox.innerHTML = `
         <h4>${current.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</h4>
