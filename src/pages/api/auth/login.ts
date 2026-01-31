@@ -23,7 +23,7 @@ export const POST: APIRoute = async ({ request }) => {
       : '';
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !password || !emailRegex.test(email) || password.length < 6) {
+  if (!email || !password || !emailRegex.test(email)) {
     return new Response('Datos inválidos', { status: 400 });
   }
 
