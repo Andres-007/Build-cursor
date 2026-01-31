@@ -26,7 +26,8 @@ export const POST: APIRoute = async ({ request }) => {
       ? (payload as { password?: string }).password
       : '';
 
-  if (!nombre || !email || !password) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!nombre || !email || !password || !emailRegex.test(email) || password.length < 6) {
     return new Response('Datos inválidos', { status: 400 });
   }
 
@@ -47,9 +48,10 @@ export const POST: APIRoute = async ({ request }) => {
       created_at: new Date()
     });
 
+    const id = result.insertedId ? result.insertedId.toString() : '';
     return new Response(
       JSON.stringify({
-        id: result.insertedId.toString(),
+        id,
         nombre,
         email,
         plan: 'free'

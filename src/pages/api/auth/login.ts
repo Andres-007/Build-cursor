@@ -22,7 +22,8 @@ export const POST: APIRoute = async ({ request }) => {
       ? (payload as { password?: string }).password
       : '';
 
-  if (!email || !password) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !password || !emailRegex.test(email) || password.length < 6) {
     return new Response('Datos inválidos', { status: 400 });
   }
 
@@ -39,9 +40,10 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response('Credenciales inválidas', { status: 401 });
     }
 
+    const id = user?._id ? user._id.toString() : '';
     return new Response(
       JSON.stringify({
-        id: user._id.toString(),
+        id,
         nombre: user.nombre,
         email: user.email,
         plan: user.plan ?? 'free'

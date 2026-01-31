@@ -118,7 +118,7 @@ export const PUT: APIRoute = async ({ request }) => {
       ? (payload as { note?: string }).note
       : '';
 
-  if (!id || !userId || !title || !date) {
+  if (!id || !userId || !title || !date || !ObjectId.isValid(id)) {
     return new Response('Datos inválidos', { status: 400 });
   }
 
@@ -162,7 +162,7 @@ export const DELETE: APIRoute = async ({ request }) => {
       ? (payload as { userId?: string }).userId?.trim()
       : '';
 
-  if (!id || !userId) {
+  if (!id || !userId || !ObjectId.isValid(id)) {
     return new Response('Datos inválidos', { status: 400 });
   }
 

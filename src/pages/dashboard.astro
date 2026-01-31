@@ -312,7 +312,12 @@ import { planDiaMock } from '../data/mock';
   const subjectDelete = document.getElementById('subject-delete');
 
   const sessionRaw = localStorage.getItem('userSession');
-  const session = sessionRaw ? JSON.parse(sessionRaw) : null;
+  let session = null;
+  try {
+    session = sessionRaw ? JSON.parse(sessionRaw) : null;
+  } catch {
+    session = null;
+  }
   const userId = session?.id;
 
   let subjects = [];
@@ -340,8 +345,10 @@ import { planDiaMock } from '../data/mock';
   function openNewItemModal() {
     if (!subjectForm) return;
     subjectForm.reset();
-    (subjectForm.querySelector('[name="id"]')).value = '';
-    (subjectForm.querySelector('[name="type"]')).value = 'subject';
+    const idField = subjectForm.querySelector('[name="id"]');
+    const typeField = subjectForm.querySelector('[name="type"]');
+    if (idField instanceof HTMLInputElement) idField.value = '';
+    if (typeField instanceof HTMLSelectElement) typeField.value = 'subject';
     setFormMode('subject');
     if (subjectDelete) subjectDelete.style.display = 'none';
     if (subjectModalTitle) subjectModalTitle.textContent = 'Nueva materia';
@@ -487,13 +494,17 @@ import { planDiaMock } from '../data/mock';
       }
       return;
     }
-
-  const [subjectsRes, eventsRes] = await Promise.all([
-    fetch(`/api/subjects?userId=${userId}`),
-    fetch(`/api/events?userId=${userId}`)
-  ]);
-  subjects = subjectsRes.ok ? await subjectsRes.json() : [];
-  events = eventsRes.ok ? await eventsRes.json() : [];
+    try {
+      const [subjectsRes, eventsRes] = await Promise.all([
+        fetch(`/api/subjects?userId=${userId}`),
+        fetch(`/api/events?userId=${userId}`)
+      ]);
+      subjects = subjectsRes.ok ? await subjectsRes.json() : [];
+      events = eventsRes.ok ? await eventsRes.json() : [];
+    } catch {
+      subjects = [];
+      events = [];
+    }
     renderSubjects();
     if (viewMode === 'month') renderCalendar();
     if (viewMode === 'week') renderWeek();
@@ -637,15 +648,25 @@ import { planDiaMock } from '../data/mock';
 
   function openSubjectModal(subject) {
     if (!subjectForm) return;
-    (subjectForm.querySelector('[name="id"]')).value = subject?.id || '';
-    (subjectForm.querySelector('[name="type"]')).value = 'subject';
-    (subjectForm.querySelector('[name="name"]')).value = subject?.name || '';
-    (subjectForm.querySelector('[name="examDate"]')).value = subject?.exam_date || '';
-    (subjectForm.querySelector('[name="priority"]')).value = subject?.priority || 'media';
-    (subjectForm.querySelector('[name="color"]')).value = subject?.color || '';
-    (subjectForm.querySelector('[name="title"]')).value = '';
-    (subjectForm.querySelector('[name="date"]')).value = '';
-    (subjectForm.querySelector('[name="note"]')).value = '';
+    const idField = subjectForm.querySelector('[name="id"]');
+    const typeField = subjectForm.querySelector('[name="type"]');
+    const nameField = subjectForm.querySelector('[name="name"]');
+    const examDateField = subjectForm.querySelector('[name="examDate"]');
+    const priorityField = subjectForm.querySelector('[name="priority"]');
+    const colorField = subjectForm.querySelector('[name="color"]');
+    const titleField = subjectForm.querySelector('[name="title"]');
+    const dateField = subjectForm.querySelector('[name="date"]');
+    const noteField = subjectForm.querySelector('[name="note"]');
+
+    if (idField instanceof HTMLInputElement) idField.value = subject?.id || '';
+    if (typeField instanceof HTMLSelectElement) typeField.value = 'subject';
+    if (nameField instanceof HTMLInputElement) nameField.value = subject?.name || '';
+    if (examDateField instanceof HTMLInputElement) examDateField.value = subject?.exam_date || '';
+    if (priorityField instanceof HTMLSelectElement) priorityField.value = subject?.priority || 'media';
+    if (colorField instanceof HTMLSelectElement) colorField.value = subject?.color || '';
+    if (titleField instanceof HTMLInputElement) titleField.value = '';
+    if (dateField instanceof HTMLInputElement) dateField.value = '';
+    if (noteField instanceof HTMLInputElement) noteField.value = '';
     setFormMode('subject');
     if (subjectDelete) subjectDelete.style.display = 'inline-flex';
     openModal(subjectModal);
@@ -653,14 +674,23 @@ import { planDiaMock } from '../data/mock';
 
   function openEventModal(event) {
     if (!subjectForm) return;
-    (subjectForm.querySelector('[name="id"]')).value = event?.id || '';
-    (subjectForm.querySelector('[name="type"]')).value = 'event';
-    (subjectForm.querySelector('[name="title"]')).value = event?.title || '';
-    (subjectForm.querySelector('[name="date"]')).value = event?.date || '';
-    (subjectForm.querySelector('[name="note"]')).value = event?.note || '';
-    (subjectForm.querySelector('[name="name"]')).value = '';
-    (subjectForm.querySelector('[name="examDate"]')).value = '';
-    (subjectForm.querySelector('[name="color"]')).value = '';
+    const idField = subjectForm.querySelector('[name="id"]');
+    const typeField = subjectForm.querySelector('[name="type"]');
+    const titleField = subjectForm.querySelector('[name="title"]');
+    const dateField = subjectForm.querySelector('[name="date"]');
+    const noteField = subjectForm.querySelector('[name="note"]');
+    const nameField = subjectForm.querySelector('[name="name"]');
+    const examDateField = subjectForm.querySelector('[name="examDate"]');
+    const colorField = subjectForm.querySelector('[name="color"]');
+
+    if (idField instanceof HTMLInputElement) idField.value = event?.id || '';
+    if (typeField instanceof HTMLSelectElement) typeField.value = 'event';
+    if (titleField instanceof HTMLInputElement) titleField.value = event?.title || '';
+    if (dateField instanceof HTMLInputElement) dateField.value = event?.date || '';
+    if (noteField instanceof HTMLInputElement) noteField.value = event?.note || '';
+    if (nameField instanceof HTMLInputElement) nameField.value = '';
+    if (examDateField instanceof HTMLInputElement) examDateField.value = '';
+    if (colorField instanceof HTMLSelectElement) colorField.value = '';
     setFormMode('event');
     if (subjectDelete) subjectDelete.style.display = 'inline-flex';
     openModal(subjectModal);
