@@ -16,10 +16,8 @@ export const POST: APIRoute = async ({ request }) => {
     typeof (payload as { message?: unknown }).message === 'string'
       ? (payload as { message?: string }).message?.trim()
       : '';
-  const plan =
-    typeof (payload as { plan?: unknown }).plan === 'string' && payload.plan === 'premium'
-      ? 'premium'
-      : 'free';
+  const planValue = (payload as { plan?: unknown }).plan;
+  const plan = typeof planValue === 'string' && planValue === 'premium' ? 'premium' : 'free';
 
   if (!message) {
     return new Response('Mensaje inválido', { status: 400 });
@@ -43,6 +41,10 @@ Pregunta del usuario: ${message}
     });
   } catch (error) {
     console.error('Error generando respuesta IA', error);
-    return new Response('Error generando respuesta IA', { status: 500 });
+    const message = error instanceof Error ? error.message : 'Error generando respuesta IA';
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 };

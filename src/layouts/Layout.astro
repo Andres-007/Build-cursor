@@ -167,16 +167,27 @@ const { title = 'Asistente de Estudio' } = Astro.props;
         body: JSON.stringify({ message, plan })
       });
       const text = await res.text();
-      if (!res.ok) throw new Error(text || 'Error');
+      let data = null;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
+      if (!res.ok) {
+        const errMsg = data?.error || text || 'Error';
+        throw new Error(errMsg);
+      }
 
-      const data = JSON.parse(text);
       const last = chatMessages.querySelector('.chat-message.assistant.pending');
       if (last) last.remove();
-      appendMessage(data.reply || 'No hay respuesta.', 'assistant');
+      appendMessage(data?.reply || 'No hay respuesta.', 'assistant');
     } catch (err) {
       const last = chatMessages.querySelector('.chat-message.assistant.pending');
       if (last) last.remove();
-      appendMessage('No se pudo responder. Intenta de nuevo.', 'assistant');
+      appendMessage(
+        err instanceof Error ? `No se pudo responder: ${err.message}` : 'No se pudo responder.',
+        'assistant'
+      );
     }
   });
 </script>
