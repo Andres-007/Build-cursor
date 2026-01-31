@@ -32,6 +32,8 @@ body {
 }
 
 .header {
+  position: relative;
+  z-index: 50;
   background: var(--card);
   padding: 1rem 1.5rem;
   box-shadow: var(--shadow);
@@ -40,6 +42,7 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
+  min-height: 56px;
 }
 
 .header-title {
@@ -49,9 +52,48 @@ body {
   text-decoration: none;
 }
 
+/* Botón hamburger: solo en móvil */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.nav-toggle-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 1px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
 .nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.25rem;
+  align-items: center;
 }
 
 .nav a {
@@ -62,12 +104,64 @@ body {
   border-radius: 8px;
   transition: background 0.2s, color 0.2s;
   min-height: 44px;
+  min-width: 44px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
 .nav a:hover {
   background: rgba(74, 144, 217, 0.12);
+}
+
+/* Header responsive: menú móvil */
+@media (max-width: 767px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    background: var(--card);
+    padding: 0.5rem 0;
+    box-shadow: var(--shadow-lg);
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.25s ease-out, opacity 0.2s ease, visibility 0.2s;
+  }
+
+  .nav.nav--open {
+    max-height: 85vh;
+    overflow-y: auto;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .nav a,
+  .nav .user-pill,
+  .nav .btn-logout {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 1rem 1.25rem;
+    border-radius: 0;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .nav .btn-logout {
+    margin: 0 1rem 0.5rem;
+    width: calc(100% - 2rem);
+  }
 }
 
 .main {
@@ -76,6 +170,12 @@ body {
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
+}
+
+@media (max-width: 767px) {
+  .main {
+    padding: 1.25rem 1rem;
+  }
 }
 
 .card {

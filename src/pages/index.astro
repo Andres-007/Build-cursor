@@ -15,18 +15,18 @@ import Layout from '../layouts/Layout.astro';
         <a class="btn btn-outline" href="/login">Ingresar</a>
       </div>
     </div>
-    <div class="hero-card card fade-up">
+  </section>
+
+  <section class="features">
+    <article class="hero-card card feature-card fade-up">
       <h2 class="section-title">Todo lo que puedes hacer</h2>
-      <ul>
+      <ul class="feature-list">
         <li>Registrar materias y fechas de exámenes.</li>
         <li>Generar planes de estudio personalizados.</li>
         <li>Acceder a funciones premium con más detalle.</li>
         <li>Consultar tu progreso diario.</li>
       </ul>
-    </div>
-  </section>
-
-  <section class="features">
+    </article>
     <article class="feature-card card fade-up">
       <h3>Plan diario</h3>
       <p>Visualiza tus tareas del día con recordatorios y prioridades.</p>
@@ -59,11 +59,12 @@ import Layout from '../layouts/Layout.astro';
 
 <style>
   .hero {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    align-items: center;
     margin-bottom: 2.5rem;
+  }
+  .hero-copy {
+    max-width: 520px;
+    margin: 0 auto;
+    text-align: center;
   }
   .hero-copy p {
     color: var(--text-muted);
@@ -74,19 +75,20 @@ import Layout from '../layouts/Layout.astro';
     gap: 1rem;
     flex-wrap: wrap;
     margin-top: 1.5rem;
-  }
-  .hero-card {
-    padding: 1.5rem;
-  }
-  .hero-card ul {
-    margin: 0;
-    padding-left: 1.25rem;
-    color: var(--text-muted);
+    justify-content: center;
   }
   .features {
     display: grid;
     gap: 1.25rem;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .hero-card.feature-card {
+    padding: 1.25rem;
+  }
+  .hero-card .feature-list {
+    margin: 0.75rem 0 0;
+    padding-left: 1.2rem;
+    color: var(--text-muted);
   }
   .feature-card {
     padding: 1.25rem;

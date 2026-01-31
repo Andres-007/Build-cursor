@@ -9,13 +9,19 @@ const { title = 'Asistente de Estudio' } = Astro.props;
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
     <title>{title}</title>
   </head>
   <body>
     <header class="header">
       <a href="/" class="header-title">Asistente de Estudio</a>
-      <nav class="nav" id="main-nav">
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+      <nav class="nav" id="main-nav" aria-label="Navegación principal">
         <a href="/">Inicio</a>
         <a href="/dashboard">Dashboard</a>
         <a href="/materias/registro">Registrar materia</a>
@@ -36,6 +42,34 @@ const { title = 'Asistente de Estudio' } = Astro.props;
     </footer>
   </body>
 </html>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toggle = document.getElementById('nav-toggle');
+    var nav = document.getElementById('main-nav');
+    if (toggle && nav) {
+      function openMenu() {
+        nav.classList.add('nav--open');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Cerrar menú');
+      }
+      function closeMenu() {
+        nav.classList.remove('nav--open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Abrir menú');
+      }
+      toggle.addEventListener('click', function() {
+        if (nav.classList.contains('nav--open')) closeMenu(); else openMenu();
+      });
+      nav.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', closeMenu);
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeMenu();
+      });
+    }
+  });
+</script>
 
 <script>
   const logoutBtn = document.getElementById('logout-btn');
