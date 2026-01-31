@@ -1,0 +1,2 @@
+# Build-cursor
+Cursor project
