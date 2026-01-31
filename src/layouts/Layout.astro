@@ -23,8 +23,8 @@ const { title = 'Asistente de Estudio' } = Astro.props;
       </button>
       <nav class="nav" id="main-nav" aria-label="Navegación principal">
         <a href="/">Inicio</a>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/materias/registro">Registrar materia</a>
+        <a href="/dashboard" data-auth="user">Dashboard</a>
+        <a href="/materias/registro" data-auth="user">Registrar materia</a>
         <a href="/premium">Premium</a>
         <a href="/login" data-auth="guest">Ingresar</a>
         <a href="/registro" data-auth="guest">Registro</a>

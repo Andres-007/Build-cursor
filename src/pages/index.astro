@@ -10,9 +10,10 @@ import Layout from '../layouts/Layout.astro';
         Organiza tus materias, planifica tu semana y genera planes de estudio con
         inteligencia artificial en segundos.
       </p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="/registro">Crear cuenta</a>
-        <a class="btn btn-outline" href="/login">Ingresar</a>
+      <div class="hero-actions" id="hero-actions">
+        <a class="btn btn-primary" href="/registro" data-auth="guest">Crear cuenta</a>
+        <a class="btn btn-outline" href="/login" data-auth="guest">Ingresar</a>
+        <a class="btn btn-primary" href="/dashboard" data-auth="user">Ir al dashboard</a>
       </div>
     </div>
   </section>
@@ -102,3 +103,13 @@ import Layout from '../layouts/Layout.astro';
     color: var(--text-muted);
   }
 </style>
+
+<script>
+  const isLoggedIn = Boolean(localStorage.getItem('userSession'));
+  document.querySelectorAll('[data-auth="guest"]').forEach((el) => {
+    (el as HTMLElement).style.display = isLoggedIn ? 'none' : 'inline-flex';
+  });
+  document.querySelectorAll('[data-auth="user"]').forEach((el) => {
+    (el as HTMLElement).style.display = isLoggedIn ? 'inline-flex' : 'none';
+  });
+</script>
