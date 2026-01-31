@@ -11,12 +11,63 @@ import Layout from '../layouts/Layout.astro';
         inteligencia artificial en segundos.
       </p>
       <div class="hero-actions" id="hero-actions">
-        <a class="btn btn-primary" href="/registro" data-auth="guest">Crear cuenta</a>
-        <a class="btn btn-outline" href="/login" data-auth="guest">Ingresar</a>
+        <button type="button" class="btn btn-primary" data-modal="modal-registro" data-auth="guest">Crear cuenta</button>
+        <button type="button" class="btn btn-outline" data-modal="modal-login" data-auth="guest">Ingresar</button>
         <a class="btn btn-primary" href="/dashboard" data-auth="user">Ir al dashboard</a>
       </div>
     </div>
   </section>
+
+  <!-- Modal Crear cuenta -->
+  <div class="modal-overlay" id="modal-registro" aria-hidden="true" role="dialog" aria-labelledby="modal-registro-title">
+    <div class="modal-box">
+      <div class="modal-inner">
+        <h2 class="modal-title" id="modal-registro-title">Crear cuenta</h2>
+        <form class="modal-form form-registro-modal" id="form-registro-modal">
+          <div class="form-group">
+            <label for="modal-nombre">Nombre completo</label>
+            <input type="text" id="modal-nombre" name="nombre" required placeholder="Ej: Ana López" />
+          </div>
+          <div class="form-group">
+            <label for="modal-email-reg">Correo</label>
+            <input type="email" id="modal-email-reg" name="email" required placeholder="correo@ejemplo.com" />
+          </div>
+          <div class="form-group">
+            <label for="modal-password-reg">Contraseña</label>
+            <input type="password" id="modal-password-reg" name="password" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-submit">Crear cuenta</button>
+          <p class="form-status" id="form-status-registro" aria-live="polite"></p>
+        </form>
+        <button type="button" class="modal-close" data-close="modal-registro" aria-label="Cerrar">×</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ingresar -->
+  <div class="modal-overlay" id="modal-login" aria-hidden="true" role="dialog" aria-labelledby="modal-login-title">
+    <div class="modal-box">
+      <div class="modal-inner">
+        <h2 class="modal-title" id="modal-login-title">Iniciar sesión</h2>
+        <form class="modal-form form-login-modal" id="form-login-modal">
+          <div class="form-group">
+            <label for="modal-email-login">Correo</label>
+            <input type="email" id="modal-email-login" name="email" required placeholder="correo@ejemplo.com" />
+          </div>
+          <div class="form-group">
+            <label for="modal-password-login">Contraseña</label>
+            <input type="password" id="modal-password-login" name="password" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-submit">Ingresar</button>
+          <p class="form-link-forgot">
+            <a href="#" id="link-olvide-modal" class="link-forgot">¿Olvidé mi contraseña?</a>
+          </p>
+          <p class="form-status" id="form-status-login" aria-live="polite"></p>
+        </form>
+        <button type="button" class="modal-close" data-close="modal-login" aria-label="Cerrar">×</button>
+      </div>
+    </div>
+  </div>
 
   <section class="features">
     <article class="hero-card card feature-card fade-up">
@@ -102,6 +153,129 @@ import Layout from '../layouts/Layout.astro';
     padding-left: 1.2rem;
     color: var(--text-muted);
   }
+
+  /* Ventanas flotantes (modales) */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .modal-overlay[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-box {
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+  }
+
+  .modal-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    text-align: center;
+  }
+
+  .modal-title {
+    margin: 0 0 1.25rem;
+    font-size: 1.35rem;
+    color: var(--text);
+    width: 100%;
+  }
+
+  .modal-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-form .form-group {
+    width: 100%;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .modal-form .form-group label {
+    display: block;
+  }
+
+  .modal-form .btn-submit {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .modal-form .form-link-forgot {
+    margin: 0.75rem 0 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-form .link-forgot {
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .modal-form .link-forgot:hover {
+    text-decoration: underline;
+  }
+
+  .modal-form .form-status {
+    margin: 0.75rem 0 0;
+    color: var(--text-muted);
+    min-height: 1.2rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .modal-close:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text);
+  }
+
+  @media (max-width: 479px) {
+    .modal-inner {
+      padding: 1.25rem;
+    }
+  }
 </style>
 
 <script>
@@ -111,5 +285,117 @@ import Layout from '../layouts/Layout.astro';
   });
   document.querySelectorAll('[data-auth="user"]').forEach((el) => {
     (el as HTMLElement).style.display = isLoggedIn ? 'inline-flex' : 'none';
+  });
+
+  // Abrir modal
+  document.querySelectorAll('[data-modal]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = (btn as HTMLElement).getAttribute('data-modal');
+      const modal = id ? document.getElementById(id) : null;
+      if (modal) {
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        (modal.querySelector('input') as HTMLInputElement)?.focus();
+      }
+    });
+  });
+
+  function closeModal(id: string) {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Cerrar con botón
+  document.querySelectorAll('[data-close]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = (btn as HTMLElement).getAttribute('data-close');
+      if (id) closeModal(id);
+    });
+  });
+
+  // Cerrar al hacer clic en el overlay (no en el contenido)
+  document.querySelectorAll('.modal-overlay').forEach((overlay) => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal(overlay.id);
+    });
+  });
+
+  // Cerrar con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay[aria-hidden="false"]').forEach((m) => closeModal(m.id));
+    }
+  });
+
+  // Formulario Crear cuenta (modal)
+  document.getElementById('form-registro-modal')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const nombre = (form.nombre as HTMLInputElement).value.trim();
+    const email = (form.email as HTMLInputElement).value.trim();
+    const password = (form.password as HTMLInputElement).value;
+    const statusEl = document.getElementById('form-status-registro');
+    if (!nombre || !email || !password || !statusEl) return;
+
+    statusEl.textContent = 'Creando cuenta...';
+
+    fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, email, password })
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+      })
+      .then((data) => {
+        localStorage.setItem('userSession', JSON.stringify(data));
+        closeModal('modal-registro');
+        window.location.href = '/dashboard';
+      })
+      .catch((err) => {
+        statusEl.textContent = err?.message || 'No se pudo crear la cuenta.';
+      });
+  });
+
+  // ¿Olvidé mi contraseña? (modal)
+  document.getElementById('link-olvide-modal')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const statusEl = document.getElementById('form-status-login');
+    if (statusEl) statusEl.textContent = 'Próximamente: recuperar contraseña por correo.';
+  });
+
+  // Formulario Ingresar (modal)
+  document.getElementById('form-login-modal')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const email = (form.email as HTMLInputElement).value.trim();
+    const password = (form.password as HTMLInputElement).value;
+    const statusEl = document.getElementById('form-status-login');
+    if (!email || !password || !statusEl) return;
+
+    statusEl.textContent = 'Validando acceso...';
+
+    fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+      })
+      .then((data) => {
+        localStorage.setItem('userSession', JSON.stringify(data));
+        closeModal('modal-login');
+        window.location.href = '/dashboard';
+      })
+      .catch((err) => {
+        statusEl.textContent = err?.message || 'No se pudo iniciar sesión.';
+      });
   });
 </script>
