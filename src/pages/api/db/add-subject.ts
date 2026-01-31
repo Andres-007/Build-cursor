@@ -1,6 +1,8 @@
 // src/pages/api/db/add-subject.ts
 import type { APIRoute } from 'astro';
-import { sql } from '../../../lib/db';
+import { getDb } from '../../../lib/db';
+
+export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   let payload: unknown;
@@ -25,15 +27,18 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const newSubject = await sql`
-      INSERT INTO subjects (name, user_id)
-      VALUES (${name}, ${userId})
-      RETURNING *
-    `;
+    const db = await getDb();
+    const result = await db.collection('subjects').insertOne({
+      name,
+      user_id: userId
+    });
 
-    return new Response(JSON.stringify(newSubject[0]), { status: 201 });
+    return new Response(
+      JSON.stringify({ id: result.insertedId.toString(), name, user_id: userId }),
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('Error guardando en PostgreSQL', error);
-    return new Response("Error guardando en PostgreSQL", { status: 500 });
+    console.error('Error guardando en MongoDB', error);
+    return new Response("Error guardando en MongoDB", { status: 500 });
   }
 };
