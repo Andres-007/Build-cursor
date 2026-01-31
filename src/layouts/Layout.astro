@@ -37,6 +37,20 @@ const { title = 'Asistente de Estudio' } = Astro.props;
     <main class="main">
       <slot />
     </main>
+    <button type="button" class="chat-fab" id="chat-fab" aria-label="Abrir chat IA">
+      💬
+    </button>
+    <section class="chat-panel" id="chat-panel" aria-live="polite">
+      <header class="chat-header">
+        <h3>Chat IA</h3>
+        <button type="button" class="chat-close" id="chat-close" aria-label="Cerrar chat">✕</button>
+      </header>
+      <div class="chat-messages" id="chat-messages"></div>
+      <form class="chat-form" id="chat-form">
+        <input type="text" id="chat-input" placeholder="Escribe tu pregunta..." required />
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>
+    </section>
     <footer class="footer">
       <p>Cursor hackatón 2026 — Powered by WONDER</p>
     </footer>
@@ -94,6 +108,67 @@ const { title = 'Asistente de Estudio' } = Astro.props;
   });
 </script>
 
+<script>
+  const chatFab = document.getElementById('chat-fab');
+  const chatPanel = document.getElementById('chat-panel');
+  const chatClose = document.getElementById('chat-close');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const chatMessages = document.getElementById('chat-messages');
+
+  function appendMessage(text, type) {
+    if (!chatMessages) return;
+    const div = document.createElement('div');
+    div.className = `chat-message ${type}`;
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  chatFab?.addEventListener('click', () => {
+    chatPanel?.classList.add('open');
+    chatInput?.focus();
+  });
+
+  chatClose?.addEventListener('click', () => {
+    chatPanel?.classList.remove('open');
+  });
+
+  chatForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!chatInput || !chatMessages) return;
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    appendMessage(message, 'user');
+    chatInput.value = '';
+    appendMessage('Pensando...', 'assistant pending');
+
+    const sessionRaw = localStorage.getItem('userSession');
+    const session = sessionRaw ? JSON.parse(sessionRaw) : null;
+    const plan = session?.plan === 'premium' ? 'premium' : 'free';
+
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, plan })
+      });
+      const text = await res.text();
+      if (!res.ok) throw new Error(text || 'Error');
+
+      const data = JSON.parse(text);
+      const last = chatMessages.querySelector('.chat-message.assistant.pending');
+      if (last) last.remove();
+      appendMessage(data.reply || 'No hay respuesta.', 'assistant');
+    } catch (err) {
+      const last = chatMessages.querySelector('.chat-message.assistant.pending');
+      if (last) last.remove();
+      appendMessage('No se pudo responder. Intenta de nuevo.', 'assistant');
+    }
+  });
+</script>
+
 <style>
   .btn-logout {
     padding: 0.45rem 1rem;
@@ -108,5 +183,89 @@ const { title = 'Asistente de Estudio' } = Astro.props;
     color: var(--accent);
     font-weight: 600;
     font-size: 0.85rem;
+  }
+  .chat-fab {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.35rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 30;
+  }
+  .chat-panel {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 5.5rem;
+    width: min(360px, 90vw);
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 30;
+  }
+  .chat-panel.open {
+    display: flex;
+  }
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: rgba(74, 144, 217, 0.1);
+  }
+  .chat-header h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+  .chat-close {
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  .chat-messages {
+    padding: 1rem;
+    display: grid;
+    gap: 0.75rem;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .chat-message {
+    padding: 0.65rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+  }
+  .chat-message.user {
+    background: rgba(74, 144, 217, 0.12);
+    justify-self: end;
+  }
+  .chat-message.assistant {
+    background: #f6f7fb;
+    border: 1px solid #eee;
+  }
+  .chat-message.assistant.pending {
+    opacity: 0.7;
+  }
+  .chat-form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-top: 1px solid #eee;
+  }
+  .chat-form input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font: inherit;
   }
 </style>
