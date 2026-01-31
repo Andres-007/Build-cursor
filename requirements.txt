@@ -1,4 +1,0 @@
-npm install astro
-npm install -D @types/node
-npm install mongodb
-npx astro add vercel
