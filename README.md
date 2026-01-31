@@ -1,5 +1,5 @@
-# Build-cursor
-Cursor project
+# MentorAI
+MentorAI project
 
 
 integrantes
