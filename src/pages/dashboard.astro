@@ -27,7 +27,7 @@ import { planDiaMock } from '../data/mock';
         <button type="button" class="btn btn-outline btn-icon" id="prev-month" aria-label="Mes anterior">◀</button>
         <span class="calendar-title" id="calendar-title"></span>
         <button type="button" class="btn btn-outline btn-icon" id="next-month" aria-label="Mes siguiente">▶</button>
-        <button type="button" class="btn btn-primary" id="btn-new-event">Nuevo evento</button>
+        <button type="button" class="btn btn-primary" id="btn-new-subject-calendar">Nueva materia</button>
       </div>
     </div>
     <div class="calendar-grid" id="calendar-grid"></div>
@@ -51,58 +51,65 @@ import { planDiaMock } from '../data/mock';
       <form id="subject-form" class="modal-form">
         <input type="hidden" name="id" />
         <label>
-          Nombre
-          <input type="text" name="name" required placeholder="Ej: Matemáticas" />
-        </label>
-        <label>
-          Fecha de examen
-          <input type="date" name="examDate" required />
-        </label>
-        <label>
-          Prioridad
-          <select name="priority">
-            <option value="alta">Alta</option>
-            <option value="media" selected>Media</option>
-            <option value="baja">Baja</option>
+          Tipo
+          <select name="type" id="item-type">
+            <option value="subject" selected>Materia</option>
+            <option value="event">Evento</option>
           </select>
         </label>
-        <label>
-          Color (opcional)
-          <input type="text" name="color" placeholder="Ej: #4a90d9" />
-        </label>
-        <button type="submit" class="btn btn-primary">Guardar materia</button>
+        <div class="form-block" data-type="subject">
+          <label>
+            Nombre
+            <input type="text" name="name" placeholder="Ej: Matemáticas" />
+          </label>
+          <label>
+            Fecha de examen
+            <input type="date" name="examDate" />
+          </label>
+          <label>
+            Prioridad
+            <select name="priority">
+              <option value="alta">Alta</option>
+              <option value="media" selected>Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </label>
+          <label>
+            Color (opcional)
+            <select name="color">
+              <option value="">Sin color</option>
+              <option value="#4a90d9">Azul</option>
+              <option value="#e57373">Rojo</option>
+              <option value="#ffb74d">Naranja</option>
+              <option value="#81c784">Verde</option>
+              <option value="#9575cd">Morado</option>
+              <option value="#4db6ac">Turquesa</option>
+              <option value="#f06292">Rosa</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-block" data-type="event">
+          <label>
+            Título
+            <input type="text" name="title" placeholder="Ej: Sesión de repaso" />
+          </label>
+          <label>
+            Fecha
+            <input type="date" name="date" />
+          </label>
+          <label>
+            Nota (opcional)
+            <input type="text" name="note" placeholder="Ej: Capítulos 3 y 4" />
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary" id="subject-submit">Guardar</button>
         <button type="button" class="btn btn-outline" id="subject-delete">Eliminar</button>
         <p class="modal-status" id="subject-status"></p>
       </form>
     </div>
   </div>
 
-  <div class="modal" id="event-modal" aria-hidden="true">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Nuevo evento</h3>
-        <button type="button" class="modal-close" data-close="event-modal">✕</button>
-      </div>
-      <form id="event-form" class="modal-form">
-        <input type="hidden" name="id" />
-        <label>
-          Título
-          <input type="text" name="title" required placeholder="Ej: Sesión de repaso" />
-        </label>
-        <label>
-          Fecha
-          <input type="date" name="date" required />
-        </label>
-        <label>
-          Nota (opcional)
-          <input type="text" name="note" placeholder="Ej: Capítulos 3 y 4" />
-        </label>
-        <button type="submit" class="btn btn-primary">Guardar evento</button>
-        <button type="button" class="btn btn-outline" id="event-delete">Eliminar</button>
-        <p class="modal-status" id="event-status"></p>
-      </form>
-    </div>
-  </div>
+  
 </Layout>
 
 <style>
@@ -259,6 +266,13 @@ import { planDiaMock } from '../data/mock';
     gap: 0.75rem;
     margin-top: 1rem;
   }
+  .form-block {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .form-block[data-type="event"] {
+    display: none;
+  }
   .modal-form label {
     display: grid;
     gap: 0.35rem;
@@ -292,15 +306,11 @@ import { planDiaMock } from '../data/mock';
   const viewMonthBtn = document.getElementById('view-month');
   const viewWeekBtn = document.getElementById('view-week');
   const newSubjectBtn = document.getElementById('btn-new-subject');
-  const newEventBtn = document.getElementById('btn-new-event');
+  const newSubjectCalendarBtn = document.getElementById('btn-new-subject-calendar');
   const subjectModal = document.getElementById('subject-modal');
-  const eventModal = document.getElementById('event-modal');
   const subjectForm = document.getElementById('subject-form');
-  const eventForm = document.getElementById('event-form');
   const subjectStatus = document.getElementById('subject-status');
-  const eventStatus = document.getElementById('event-status');
   const subjectDelete = document.getElementById('subject-delete');
-  const eventDelete = document.getElementById('event-delete');
 
   const sessionRaw = localStorage.getItem('userSession');
   const session = sessionRaw ? JSON.parse(sessionRaw) : null;
@@ -329,7 +339,7 @@ import { planDiaMock } from '../data/mock';
   });
 
   newSubjectBtn?.addEventListener('click', () => openModal(subjectModal));
-  newEventBtn?.addEventListener('click', () => openModal(eventModal));
+  newSubjectCalendarBtn?.addEventListener('click', () => openModal(subjectModal));
 
   function formatDateKey(date) {
     return date.toISOString().slice(0, 10);
@@ -467,12 +477,12 @@ import { planDiaMock } from '../data/mock';
       return;
     }
 
-    const [subjectsRes, eventsRes] = await Promise.all([
-      fetch(`/api/subjects?userId=${userId}`),
-      fetch(`/api/events?userId=${userId}`)
-    ]);
-    subjects = subjectsRes.ok ? await subjectsRes.json() : [];
-    events = eventsRes.ok ? await eventsRes.json() : [];
+  const [subjectsRes, eventsRes] = await Promise.all([
+    fetch(`/api/subjects?userId=${userId}`),
+    fetch(`/api/events?userId=${userId}`)
+  ]);
+  subjects = subjectsRes.ok ? await subjectsRes.json() : [];
+  events = eventsRes.ok ? await eventsRes.json() : [];
     renderSubjects();
     if (viewMode === 'month') renderCalendar();
     if (viewMode === 'week') renderWeek();
@@ -510,6 +520,22 @@ import { planDiaMock } from '../data/mock';
     renderWeek();
   });
 
+  function setFormMode(type) {
+    const subjectBlock = subjectForm?.querySelector('[data-type="subject"]');
+    const eventBlock = subjectForm?.querySelector('[data-type="event"]');
+    const submitBtn = document.getElementById('subject-submit');
+    if (subjectBlock && eventBlock) {
+      subjectBlock.style.display = type === 'subject' ? 'grid' : 'none';
+      eventBlock.style.display = type === 'event' ? 'grid' : 'none';
+    }
+    if (submitBtn) submitBtn.textContent = type === 'event' ? 'Guardar evento' : 'Guardar materia';
+  }
+
+  document.getElementById('item-type')?.addEventListener('change', (e) => {
+    const value = (e.target as HTMLSelectElement).value;
+    setFormMode(value);
+  });
+
   subjectForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!userId || !subjectForm || !subjectStatus) return;
@@ -517,33 +543,46 @@ import { planDiaMock } from '../data/mock';
     const formData = new FormData(form);
     subjectStatus.textContent = 'Guardando materia...';
 
+    const type = String(formData.get('type') || 'subject');
     const payload = {
       id: String(formData.get('id') || ''),
       userId,
       name: String(formData.get('name') || ''),
       examDate: String(formData.get('examDate') || ''),
       priority: String(formData.get('priority') || 'media'),
-      color: String(formData.get('color') || '')
+      color: String(formData.get('color') || ''),
+      title: String(formData.get('title') || ''),
+      date: String(formData.get('date') || ''),
+      note: String(formData.get('note') || '')
     };
 
     try {
       const isEdit = Boolean(payload.id);
-      const res = await fetch('/api/subjects', {
+      const endpoint = type === 'event' ? '/api/events' : '/api/subjects';
+      const res = await fetch(endpoint, {
         method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
-      if (isEdit) {
-        subjects = subjects.map((s) => (s.id === data.id ? data : s));
+      if (type === 'event') {
+        if (isEdit) {
+          events = events.map((ev) => (ev.id === data.id ? data : ev));
+        } else {
+          events.unshift(data);
+        }
       } else {
-        subjects.unshift(data);
+        if (isEdit) {
+          subjects = subjects.map((s) => (s.id === data.id ? data : s));
+        } else {
+          subjects.unshift(data);
+        }
+        renderSubjects();
       }
-      renderSubjects();
       if (viewMode === 'month') renderCalendar();
       if (viewMode === 'week') renderWeek();
-      subjectStatus.textContent = 'Materia guardada.';
+      subjectStatus.textContent = type === 'event' ? 'Evento guardado.' : 'Materia guardada.';
       form.reset();
       closeModal(subjectModal);
     } catch (err) {
@@ -555,20 +594,26 @@ import { planDiaMock } from '../data/mock';
     if (!userId || !subjectForm || !subjectStatus) return;
     const formData = new FormData(subjectForm);
     const id = String(formData.get('id') || '');
+    const type = String(formData.get('type') || 'subject');
     if (!id) return;
-    subjectStatus.textContent = 'Eliminando materia...';
+    subjectStatus.textContent = type === 'event' ? 'Eliminando evento...' : 'Eliminando materia...';
     try {
-      const res = await fetch('/api/subjects', {
+      const endpoint = type === 'event' ? '/api/events' : '/api/subjects';
+      const res = await fetch(endpoint, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, userId })
       });
       if (!res.ok) throw new Error(await res.text());
-      subjects = subjects.filter((s) => s.id !== id);
-      renderSubjects();
+      if (type === 'event') {
+        events = events.filter((ev) => ev.id !== id);
+      } else {
+        subjects = subjects.filter((s) => s.id !== id);
+        renderSubjects();
+      }
       if (viewMode === 'month') renderCalendar();
       if (viewMode === 'week') renderWeek();
-      subjectStatus.textContent = 'Materia eliminada.';
+      subjectStatus.textContent = type === 'event' ? 'Evento eliminado.' : 'Materia eliminada.';
       subjectForm.reset();
       closeModal(subjectModal);
     } catch (err) {
@@ -576,86 +621,33 @@ import { planDiaMock } from '../data/mock';
     }
   });
 
-  eventForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!userId || !eventForm || !eventStatus) return;
-    const form = eventForm;
-    const formData = new FormData(form);
-    eventStatus.textContent = 'Guardando evento...';
-
-    const payload = {
-      id: String(formData.get('id') || ''),
-      userId,
-      title: String(formData.get('title') || ''),
-      date: String(formData.get('date') || ''),
-      note: String(formData.get('note') || '')
-    };
-
-    try {
-      const isEdit = Boolean(payload.id);
-      const res = await fetch('/api/events', {
-        method: isEdit ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      if (isEdit) {
-        events = events.map((ev) => (ev.id === data.id ? data : ev));
-      } else {
-        events.unshift(data);
-      }
-      if (viewMode === 'month') renderCalendar();
-      if (viewMode === 'week') renderWeek();
-      eventStatus.textContent = 'Evento guardado.';
-      form.reset();
-      closeModal(eventModal);
-    } catch (err) {
-      eventStatus.textContent = err?.message || 'No se pudo guardar.';
-    }
-  });
-
-  eventDelete?.addEventListener('click', async () => {
-    if (!userId || !eventForm || !eventStatus) return;
-    const formData = new FormData(eventForm);
-    const id = String(formData.get('id') || '');
-    if (!id) return;
-    eventStatus.textContent = 'Eliminando evento...';
-    try {
-      const res = await fetch('/api/events', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, userId })
-      });
-      if (!res.ok) throw new Error(await res.text());
-      events = events.filter((ev) => ev.id !== id);
-      if (viewMode === 'month') renderCalendar();
-      if (viewMode === 'week') renderWeek();
-      eventStatus.textContent = 'Evento eliminado.';
-      eventForm.reset();
-      closeModal(eventModal);
-    } catch (err) {
-      eventStatus.textContent = err?.message || 'No se pudo eliminar.';
-    }
-  });
-
   function openSubjectModal(subject) {
     if (!subjectForm) return;
     (subjectForm.querySelector('[name="id"]')).value = subject?.id || '';
+    (subjectForm.querySelector('[name="type"]')).value = 'subject';
     (subjectForm.querySelector('[name="name"]')).value = subject?.name || '';
     (subjectForm.querySelector('[name="examDate"]')).value = subject?.exam_date || '';
     (subjectForm.querySelector('[name="priority"]')).value = subject?.priority || 'media';
     (subjectForm.querySelector('[name="color"]')).value = subject?.color || '';
+    (subjectForm.querySelector('[name="title"]')).value = '';
+    (subjectForm.querySelector('[name="date"]')).value = '';
+    (subjectForm.querySelector('[name="note"]')).value = '';
+    setFormMode('subject');
     openModal(subjectModal);
   }
 
   function openEventModal(event) {
-    if (!eventForm) return;
-    (eventForm.querySelector('[name="id"]')).value = event?.id || '';
-    (eventForm.querySelector('[name="title"]')).value = event?.title || '';
-    (eventForm.querySelector('[name="date"]')).value = event?.date || '';
-    (eventForm.querySelector('[name="note"]')).value = event?.note || '';
-    openModal(eventModal);
+    if (!subjectForm) return;
+    (subjectForm.querySelector('[name="id"]')).value = event?.id || '';
+    (subjectForm.querySelector('[name="type"]')).value = 'event';
+    (subjectForm.querySelector('[name="title"]')).value = event?.title || '';
+    (subjectForm.querySelector('[name="date"]')).value = event?.date || '';
+    (subjectForm.querySelector('[name="note"]')).value = event?.note || '';
+    (subjectForm.querySelector('[name="name"]')).value = '';
+    (subjectForm.querySelector('[name="examDate"]')).value = '';
+    (subjectForm.querySelector('[name="color"]')).value = '';
+    setFormMode('event');
+    openModal(subjectModal);
   }
 
   subjectsGrid?.addEventListener('click', (e) => {
